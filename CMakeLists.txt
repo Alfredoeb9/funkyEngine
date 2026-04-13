@@ -5,6 +5,7 @@ project(Bengine CXX)
 # (You might want to move your FetchContent for SDL2 from the game into here!)
 
 set(Bengine_SOURCES
+    funkyEngine/core/Camera2D.cpp
     funkyEngine/core/Errors.cpp
     funkyEngine/core/ResourceManager.cpp
     funkyEngine/core/TextureCache.cpp
