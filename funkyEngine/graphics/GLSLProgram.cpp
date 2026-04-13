@@ -3,17 +3,17 @@
 #include "core/Errors.h"
 #include <fstream>
 
-GLSLProgram::GLSLProgram() : _programID(0), _vertexShaderID(0), _fragmentShaderID(0), _numAttributes(0) {
+FunkyEngine::GLSLProgram::GLSLProgram() : _programID(0), _vertexShaderID(0), _fragmentShaderID(0), _numAttributes(0) {
 
 }
 
-GLSLProgram::~GLSLProgram() {
+FunkyEngine::GLSLProgram::~GLSLProgram() {
 
 }
 
 // https://wikis.khronos.org/opengl/Shader_Compilation        <---- Offical Docs
 // https://learnopengl.com/getting-started/shaders
-void GLSLProgram::compileShaders(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath) {
+void FunkyEngine::GLSLProgram::compileShaders(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath) {
     // Vertex and fragment shaders are successfully compiled.
     // Now time to link them together into a program.
     // Get a program object.
@@ -38,7 +38,7 @@ void GLSLProgram::compileShaders(const std::string& vertexShaderFilePath, const 
 }
 
 // Combine shaders into one program
-void GLSLProgram::linkShaders() {
+void FunkyEngine::GLSLProgram::linkShaders() {
 
     // Attach our shaders to our program
     glAttachShader(_programID, _vertexShaderID);
@@ -80,12 +80,12 @@ void GLSLProgram::linkShaders() {
 
 
 // Binds 
-void GLSLProgram::addAttribute(const std::string& attributeName) {
+void FunkyEngine::GLSLProgram::addAttribute(const std::string& attributeName) {
     glBindAttribLocation(_programID, _numAttributes, attributeName.c_str());
     _numAttributes++;
 }
 
-GLint GLSLProgram::getUniformLocation(const std::string& uniformName) {
+GLint FunkyEngine::GLSLProgram::getUniformLocation(const std::string& uniformName) {
     GLint location = glGetUniformLocation(_programID, uniformName.c_str());
 
     if (location == -1) {
@@ -95,7 +95,7 @@ GLint GLSLProgram::getUniformLocation(const std::string& uniformName) {
     return location;
 }
 
-void GLSLProgram::use() {
+void FunkyEngine::GLSLProgram::use() {
     // Tell Open GL this is the shader program we want to use
     glUseProgram(_programID);
 
@@ -105,7 +105,7 @@ void GLSLProgram::use() {
     }
 }
 
-void GLSLProgram::unuse() {
+void FunkyEngine::GLSLProgram::unuse() {
     // Use no program
     glUseProgram(0);
 
@@ -115,7 +115,7 @@ void GLSLProgram::unuse() {
 }
 
 
-void GLSLProgram::compileShader(const std::string& filePath, GLuint id) {
+void FunkyEngine::GLSLProgram::compileShader(const std::string& filePath, GLuint id) {
     // Load code from files 
     // Fix: not the fastest but works
     std::ifstream vertexFile(filePath);

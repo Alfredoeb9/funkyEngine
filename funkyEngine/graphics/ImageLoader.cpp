@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-GLTexture ImageLoader::loadPNG(std::string filePath) {
+FunkyEngine::GLTexture FunkyEngine::ImageLoader::loadPNG(std::string filePath) {
     // create texture on a stack no the efficient way
     // Fix (abstracts): find a better way
     GLTexture texture = {};

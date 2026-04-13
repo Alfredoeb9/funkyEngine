@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-bool IOManager::readFileToBuffer(std::string filePath, std::vector<unsigned char>& buffer) {
+bool FunkyEngine::IOManager::readFileToBuffer(std::string filePath, std::vector<unsigned char>& buffer) {
     // read file in binary format (receieve exact contents of the file)
     std::ifstream file(filePath, std::ios::binary);
 

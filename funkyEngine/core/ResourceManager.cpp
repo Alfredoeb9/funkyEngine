@@ -1,16 +1,16 @@
 #include "ResourceManager.h"
 
-ResourceManager::ResourceManager() {
+FunkyEngine::ResourceManager::ResourceManager() {
 
 }
 
-ResourceManager::~ResourceManager() {
+FunkyEngine::ResourceManager::~ResourceManager() {
 
 }
 
-TextureCache ResourceManager::_textureCache;
+FunkyEngine::TextureCache FunkyEngine::ResourceManager::_textureCache;
 
 // Wrapper function to getTexture
-GLTexture ResourceManager::getTexture(std::string texturePath) {
+FunkyEngine::GLTexture FunkyEngine::ResourceManager::getTexture(std::string texturePath) {
     return _textureCache.getTexture(texturePath);
 }

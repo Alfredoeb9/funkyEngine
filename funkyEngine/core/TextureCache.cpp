@@ -3,15 +3,15 @@
 
 #include <iostream>
 
-TextureCache::TextureCache() {
+FunkyEngine::TextureCache::TextureCache() {
 
 }
 
-TextureCache::~TextureCache() {
+FunkyEngine::TextureCache::~TextureCache() {
     
 }
 
-GLTexture TextureCache::getTexture(std::string texturePath) {
+FunkyEngine::GLTexture FunkyEngine::TextureCache::getTexture(std::string texturePath) {
     // traverse the nodes looking for existing one
     // if it reaches a nullptr it going to return a iterator that 
     // points to map::end

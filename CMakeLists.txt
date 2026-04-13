@@ -8,12 +8,15 @@ set(Bengine_SOURCES
     funkyEngine/core/Errors.cpp
     funkyEngine/core/ResourceManager.cpp
     funkyEngine/core/TextureCache.cpp
+    funkyEngine/core/Window.cpp
     funkyEngine/entities/Sprites.cpp
     funkyEngine/graphics/Shaders.cpp
     funkyEngine/graphics/ImageLoader.cpp
     funkyEngine/graphics/GLSLProgram.cpp
     funkyEngine/graphics/IOManager.cpp
     funkyEngine/graphics/picoPNG.cpp
+
+    funkyEngine/FunkyEngine.cpp
 )
 
 add_library(Bengine STATIC ${Bengine_SOURCES})

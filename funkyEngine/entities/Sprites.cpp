@@ -5,11 +5,11 @@
 #include <cstddef>
 #include <string>
 
-Sprite::Sprite(){
+FunkyEngine::Sprite::Sprite(){
     _vboID = 0;
 }
 
-Sprite::~Sprite(){
+FunkyEngine::Sprite::~Sprite(){
 
     // Always delete buffers when done
     if (_vboID != 0) {
@@ -19,7 +19,7 @@ Sprite::~Sprite(){
 
 // Initilize the sprite VBA, x, y, width, and height are
 // in the normalized device coordinate space. so, [-1, 1]
-void Sprite::init(float x, float y, float width, float height, std::string texturePath) {
+void FunkyEngine::Sprite::init(float x, float y, float width, float height, std::string texturePath) {
     _x = x;
     _y = y;
     _width = width;
@@ -82,7 +82,7 @@ void Sprite::init(float x, float y, float width, float height, std::string textu
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Sprite::draw() {
+void FunkyEngine::Sprite::draw() {
     // Dont want to unbind textures
     glBindTexture(GL_TEXTURE_2D, _texture.id);
 
