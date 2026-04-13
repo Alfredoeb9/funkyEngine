@@ -5,22 +5,22 @@ project(Bengine CXX)
 # (You might want to move your FetchContent for SDL2 from the game into here!)
 
 set(Bengine_SOURCES
-    engine/core/Errors.cpp
-    engine/core/ResourceManager.cpp
-    engine/core/TextureCache.cpp
-    engine/entities/Sprites.cpp
-    engine/graphics/Shaders.cpp
-    engine/graphics/ImageLoader.cpp
-    engine/graphics/GLSLProgram.cpp
-    engine/graphics/IOManager.cpp
-    engine/graphics/picoPNG.cpp
+    funkyEngine/core/Errors.cpp
+    funkyEngine/core/ResourceManager.cpp
+    funkyEngine/core/TextureCache.cpp
+    funkyEngine/entities/Sprites.cpp
+    funkyEngine/graphics/Shaders.cpp
+    funkyEngine/graphics/ImageLoader.cpp
+    funkyEngine/graphics/GLSLProgram.cpp
+    funkyEngine/graphics/IOManager.cpp
+    funkyEngine/graphics/picoPNG.cpp
 )
 
 add_library(Bengine STATIC ${Bengine_SOURCES})
 
 # Tell anyone who links to Bengine where to find its header files
 target_include_directories(Bengine PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/engine
+    ${CMAKE_CURRENT_SOURCE_DIR}/funkyEngine
 )
 
 # Link SDL2 and OpenGL to Bengine here

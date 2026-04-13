@@ -1,6 +1,6 @@
 #include "GLSLProgram.h"
 #include <vector>
-#include <core/Errors.h>
+#include "core/Errors.h"
 #include <fstream>
 
 GLSLProgram::GLSLProgram() : _programID(0), _vertexShaderID(0), _fragmentShaderID(0), _numAttributes(0) {
