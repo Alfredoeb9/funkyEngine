@@ -21,10 +21,25 @@ set(Bengine_SOURCES
 
 add_library(Bengine STATIC ${Bengine_SOURCES})
 
+FetchContent_Declare(
+	glm
+	GIT_REPOSITORY	https://github.com/g-truc/glm.git
+	GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
+)
+
+FetchContent_MakeAvailable(glm)
+
 # Tell anyone who links to Bengine where to find its header files
 target_include_directories(Bengine PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/funkyEngine
 )
 
 # Link SDL2 and OpenGL to Bengine here
-target_link_libraries(Bengine PUBLIC SDL2main SDL2-static OpenGL::GL GLEW::GLEW)
+target_link_libraries(Bengine PUBLIC 
+    SDL2main 
+    SDL2-static
+    SDL2_image 
+    OpenGL::GL 
+    GLEW::GLEW 
+    glm::glm
+)
