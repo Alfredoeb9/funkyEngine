@@ -58,6 +58,11 @@ int FunkyEngine::Window::create(std::string windowName, int screenWidth, int scr
     // Background color
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
+    // Enable alpha blend (transprancy)
+    glEnable(GL_BLEND);
+    // What kind of blend to use
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     return 0;
 }
 
