@@ -10,6 +10,7 @@ set(Bengine_SOURCES
     funkyEngine/core/ResourceManager.cpp
     funkyEngine/core/TextureCache.cpp
     funkyEngine/core/Window.cpp
+    funkyEngine/core/InputManager.cpp
     funkyEngine/entities/Sprites.cpp
     funkyEngine/entities/SpriteBatch.cpp
     funkyEngine/graphics/Shaders.cpp
