@@ -3,6 +3,35 @@ project(Bengine CXX)
 
 # Fetch SDL2 and OpenGL stuff here if Bengine needs it independently
 # (You might want to move your FetchContent for SDL2 from the game into here!)
+include(FetchContent)
+
+# 1. Fetch SDL2
+FetchContent_Declare(
+    SDL2
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+    GIT_TAG release-2.28.5
+)
+FetchContent_MakeAvailable(SDL2)
+
+# 2. Fetch SDL2_image
+FetchContent_Declare(
+    SDL2_image
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+    GIT_TAG release-2.8.2
+)
+FetchContent_MakeAvailable(SDL2_image)
+
+# 3. Fetch GLM
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY	https://github.com/g-truc/glm.git
+    GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
+)
+FetchContent_MakeAvailable(glm)
+
+# 4. Find System Packages (Must be called BEFORE linking targets like OpenGL::GL)
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 set(Bengine_SOURCES
     funkyEngine/core/Camera2D.cpp
@@ -24,14 +53,7 @@ set(Bengine_SOURCES
 )
 
 add_library(Bengine STATIC ${Bengine_SOURCES})
-
-FetchContent_Declare(
-	glm
-	GIT_REPOSITORY	https://github.com/g-truc/glm.git
-	GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
-)
-
-FetchContent_MakeAvailable(glm)
+add_library(FunkyEngine ALIAS Bengine)
 
 # Tell anyone who links to Bengine where to find its header files
 target_include_directories(Bengine PUBLIC 
