@@ -11,6 +11,7 @@ set(Bengine_SOURCES
     funkyEngine/core/TextureCache.cpp
     funkyEngine/core/Window.cpp
     funkyEngine/entities/Sprites.cpp
+    funkyEngine/entities/SpriteBatch.cpp
     funkyEngine/graphics/Shaders.cpp
     funkyEngine/graphics/ImageLoader.cpp
     funkyEngine/graphics/GLSLProgram.cpp

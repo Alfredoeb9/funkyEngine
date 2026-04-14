@@ -88,24 +88,13 @@ void FunkyEngine::Sprite::draw() {
 
     glBindBuffer(GL_ARRAY_BUFFER, _vboID);
 
-    // send one array of positions
-    glEnableVertexAttribArray(0);
-    // send one array of colors
-    glEnableVertexAttribArray(1);
-
-    // do the drawing and tell openGL where the vertex is inthe buffer ID
-    // Point openGL to the start of our data
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-    // Color attribute pointer
-    // normailize if we want to convert rgba from 255 to 0 - 1
-    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-    // This is the UV attribute pointer
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    
     // Acturally draw the data
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
