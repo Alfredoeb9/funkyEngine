@@ -47,6 +47,9 @@ void FunkyEngine::Camera2D::update() {
                 like a regulat 4 quad plane, helps with scaling
 */
 glm::vec2 FunkyEngine::Camera2D::convertScreenCoordsToWorld(glm::vec2 screenCoords) {
+    // Invert y direction (OpenGL) (used for our projectiles)
+    screenCoords.y = _screenHeight - screenCoords.y;
+    
     // Convert middle of window to (0,0)
     screenCoords -= glm::vec2(_screenWidth / 2, _screenHeight / 2);
     // Scale the coords
