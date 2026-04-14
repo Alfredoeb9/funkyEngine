@@ -1,4 +1,5 @@
 #include "Camera2D.h"
+#include <glm/glm.hpp>
 
 FunkyEngine::Camera2D::Camera2D() : _position(0.0f, 0.0f), _cameraMatrix(1.0f), _orthoMatrix(1.0f), _scale(1.0f), _needsMatrixUpdate(true), _screenWidth(500), _screenHeight(500) {
 
@@ -38,4 +39,20 @@ void FunkyEngine::Camera2D::update() {
 
         _needsMatrixUpdate = false;
     }
+}
+
+/*
+    BEFORE: The window top left is (0,0) the bottom right is (1270, 720)
+    Solution: It would be better if when we click the middle of the screen it is (0,0) and click left would be -1,0
+                like a regulat 4 quad plane, helps with scaling
+*/
+glm::vec2 FunkyEngine::Camera2D::convertScreenCoordsToWorld(glm::vec2 screenCoords) {
+    // Convert middle of window to (0,0)
+    screenCoords -= glm::vec2(_screenWidth / 2, _screenHeight / 2);
+    // Scale the coords
+    screenCoords /= _scale;
+    // Translate with the camera position
+    screenCoords += _position;
+
+    return screenCoords;
 }

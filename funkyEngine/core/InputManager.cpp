@@ -17,6 +17,11 @@ void FunkyEngine::InputManager::releaseKey(unsigned int keyID) {
     _keyMap[keyID] = false;
 }
 
+void FunkyEngine::InputManager::setMouseCoords(float x, float y) {
+    _mouseCoords.x = x;
+    _mouseCoords.y = y;
+}
+
 bool FunkyEngine::InputManager::isKeyPressed(unsigned int keyID) {
     auto iter = _keyMap.find(keyID);
 

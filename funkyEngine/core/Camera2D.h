@@ -13,6 +13,10 @@ namespace FunkyEngine {
             // update cmera
             void update();
 
+            // Take screen coordinates and convert them into world coordinates
+            // helps with projectile shooting
+            glm::vec2 convertScreenCoordsToWorld(glm::vec2 screenCoords);
+
             // Setters
             void setPosition(const glm::vec2& newPosition) {
                 _position = newPosition;
