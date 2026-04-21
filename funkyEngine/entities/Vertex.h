@@ -37,11 +37,13 @@ namespace FunkyEngine {
             GLubyte uses 1 byte per colorRGBA insead of 4 bytes
         */
         struct ColorRGBA {
+            ColorRGBA() : r(0), g(0), b(0), a(255) {} // Default constructor to initialize color to opaque black
+            ColorRGBA(GLubyte r, GLubyte g, GLubyte b, GLubyte a) : r(r), g(g), b(b), a(a) {} // Parameterized constructor for easy color initialization
             GLubyte r;
             GLubyte g;
             GLubyte b;
             GLubyte a;
-        } colorRGBA;
+        } color;
         
         // GLubyte colorRGBA[4];         // 4 bytes, 1 for each Red, Green, Blue, and alpha - 4 bytes in continuous memory
 
@@ -68,10 +70,10 @@ namespace FunkyEngine {
         }
         
         void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a ) {
-            colorRGBA.r = r;
-            colorRGBA.g = g;
-            colorRGBA.b = b;
-            colorRGBA.a = a;
+            color.r = r;
+            color.g = g;
+            color.b = b;
+            color.a = a;
         }
 
         void setUV(float u, float v) {

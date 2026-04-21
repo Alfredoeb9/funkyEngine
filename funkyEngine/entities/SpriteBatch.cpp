@@ -50,19 +50,19 @@ void FunkyEngine::SpriteBatch::draw(const glm::vec4& destRect, const glm::vec4& 
     newGlyph->depth = depth;
 
     // Vertices
-    newGlyph->topLeft.colorRGBA = colorRGBA;
+    newGlyph->topLeft.color = colorRGBA;
     newGlyph->topLeft.setPosition(destRect.x, destRect.y + destRect.w);    // the y element of is in uvRect.w or uvRect[3]
     newGlyph->topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
 
-    newGlyph->bottomLeft.colorRGBA = colorRGBA;
+    newGlyph->bottomLeft.color = colorRGBA;
     newGlyph->bottomLeft.setPosition(destRect.x, destRect.y); 
     newGlyph->bottomLeft.setUV(uvRect.x, uvRect.y);
 
-    newGlyph->bottomRight.colorRGBA = colorRGBA;
+    newGlyph->bottomRight.color = colorRGBA;
     newGlyph->bottomRight.setPosition(destRect.x + destRect.z, destRect.y); 
     newGlyph->bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
 
-    newGlyph->topRight.colorRGBA = colorRGBA;
+    newGlyph->topRight.color = colorRGBA;
     newGlyph->topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);    // the y element of is in uvRect.w or uvRect[3]
     newGlyph->topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
 
@@ -206,7 +206,7 @@ void FunkyEngine::SpriteBatch::createVertexArray() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     // colorRGBA attribute pointer
     // normailize if we want to convert rgba from 255 to 0 - 1
-    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, colorRGBA));
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
     // This is the UV attribute pointer
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
