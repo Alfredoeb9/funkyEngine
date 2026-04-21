@@ -43,26 +43,26 @@ void FunkyEngine::SpriteBatch::end() {
 }
 
 // Add to batch
-void FunkyEngine::SpriteBatch::draw(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::Color& color ) {
+void FunkyEngine::SpriteBatch::draw(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA ) {
     Glyph* newGlyph = new Glyph;
 
     newGlyph->texture = texture;
     newGlyph->depth = depth;
 
     // Vertices
-    newGlyph->topLeft.color = color;
+    newGlyph->topLeft.colorRGBA = colorRGBA;
     newGlyph->topLeft.setPosition(destRect.x, destRect.y + destRect.w);    // the y element of is in uvRect.w or uvRect[3]
     newGlyph->topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
 
-    newGlyph->bottomLeft.color = color;
+    newGlyph->bottomLeft.colorRGBA = colorRGBA;
     newGlyph->bottomLeft.setPosition(destRect.x, destRect.y); 
     newGlyph->bottomLeft.setUV(uvRect.x, uvRect.y);
 
-    newGlyph->bottomRight.color = color;
+    newGlyph->bottomRight.colorRGBA = colorRGBA;
     newGlyph->bottomRight.setPosition(destRect.x + destRect.z, destRect.y); 
     newGlyph->bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
 
-    newGlyph->topRight.color = color;
+    newGlyph->topRight.colorRGBA = colorRGBA;
     newGlyph->topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);    // the y element of is in uvRect.w or uvRect[3]
     newGlyph->topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
 
@@ -204,9 +204,9 @@ void FunkyEngine::SpriteBatch::createVertexArray() {
     // do the drawing and tell openGL where the vertex is inthe buffer ID
     // Point openGL to the start of our data
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-    // Color attribute pointer
+    // colorRGBA attribute pointer
     // normailize if we want to convert rgba from 255 to 0 - 1
-    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, colorRGBA));
     // This is the UV attribute pointer
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 

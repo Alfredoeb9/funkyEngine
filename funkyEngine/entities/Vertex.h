@@ -18,7 +18,7 @@ namespace FunkyEngine {
                 OpenGL reads it as single contiguous block of memory
                 with 20 consecutive bytes
             * Position: 8 byts (float x, float y)
-            * Color: 4 bytes (GLubyte r, g, b, a)
+            * ColorRGBA: 4 bytes (GLubyte r, g, b, a)
             * UV: 8 bytes (float u, float v)
     */
     struct Vertex {
@@ -33,17 +33,17 @@ namespace FunkyEngine {
         // float position[2];              // float: 4 bytes, an array[2]: 4 bytes. For a total of 8 bytes
         
         /*
-            (r, g, b, a): Tells the GPU what color tint this corner has
-            GLubyte uses 1 byte per color insead of 4 bytes
+            (r, g, b, a): Tells the GPU what colorRGBA tint this corner has
+            GLubyte uses 1 byte per colorRGBA insead of 4 bytes
         */
-        struct Color {
+        struct ColorRGBA {
             GLubyte r;
             GLubyte g;
             GLubyte b;
             GLubyte a;
-        } color;
+        } colorRGBA;
         
-        // GLubyte color[4];         // 4 bytes, 1 for each Red, Green, Blue, and alpha - 4 bytes in continuous memory
+        // GLubyte colorRGBA[4];         // 4 bytes, 1 for each Red, Green, Blue, and alpha - 4 bytes in continuous memory
 
 
         /*
@@ -68,10 +68,10 @@ namespace FunkyEngine {
         }
         
         void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a ) {
-            color.r = r;
-            color.g = g;
-            color.b = b;
-            color.a = a;
+            colorRGBA.r = r;
+            colorRGBA.g = g;
+            colorRGBA.b = b;
+            colorRGBA.a = a;
         }
 
         void setUV(float u, float v) {

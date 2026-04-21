@@ -61,7 +61,7 @@ namespace FunkyEngine {
             void end();
 
             // Add to batch
-            void draw(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::Color& color );
+            void draw(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA );
 
             // Render and actually draw
             void renderBatch();

@@ -55,7 +55,7 @@ int FunkyEngine::Window::create(std::string windowName, int screenWidth, int scr
         return false;
     }
 
-    // Background color
+    // Background colorRGBA
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
     // Enable alpha blend (transprancy)
