@@ -35,7 +35,7 @@ FunkyEngine::GLTexture FunkyEngine::TextureCache::getTexture(std::string texture
         return newTexture;
     }
 
-    std::cout << "Used Cached Texture!\n";
+    // std::cout << "Used Cached Texture!\n";
 
     return mit->second;
 }

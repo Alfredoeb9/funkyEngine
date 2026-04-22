@@ -55,7 +55,6 @@ set(Bengine_SOURCES
     funkyEngine/graphics/GLSLProgram.cpp
     funkyEngine/graphics/IOManager.cpp
     funkyEngine/graphics/picoPNG.cpp
-
     funkyEngine/FunkyEngine.cpp
 )
 

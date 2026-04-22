@@ -1,4 +1,5 @@
 #include "SpriteBatch.h"
+#include "include/Constant.h"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -80,6 +81,52 @@ void FunkyEngine::SpriteBatch::renderBatch() {
     }
 
     glBindVertexArray(0);
+}
+
+void FunkyEngine::SpriteBatch::addGlyphAt(int x, int y, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA) {
+    TilePos pos{x, y};
+    // Remove existing glyph at this position if it exists
+    removeGlyphAt(x, y);
+
+    Glyph* newGlyph = new Glyph;
+    newGlyph->texture = texture;
+    newGlyph->depth = depth;
+
+    glm::vec4 destRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+
+    // Set up vertices (same as your draw function)
+    newGlyph->topLeft.color = colorRGBA;
+    newGlyph->topLeft.setPosition(destRect.x, destRect.y + destRect.w);
+    newGlyph->topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
+
+    newGlyph->bottomLeft.color = colorRGBA;
+    newGlyph->bottomLeft.setPosition(destRect.x, destRect.y);
+    newGlyph->bottomLeft.setUV(uvRect.x, uvRect.y);
+
+    newGlyph->bottomRight.color = colorRGBA;
+    newGlyph->bottomRight.setPosition(destRect.x + destRect.z, destRect.y);
+    newGlyph->bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
+
+    newGlyph->topRight.color = colorRGBA;
+    newGlyph->topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);
+    newGlyph->topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
+
+    _tileGlyphs[pos] = newGlyph;
+    _glyphs.push_back(newGlyph); // For batching
+}
+
+void FunkyEngine::SpriteBatch::removeGlyphAt(int x, int y) {
+    TilePos pos{x, y};
+    auto it = _tileGlyphs.find(pos);
+    if (it != _tileGlyphs.end()) {
+        // Remove from _glyphs vector
+        auto glyphIt = std::find(_glyphs.begin(), _glyphs.end(), it->second);
+        if (glyphIt != _glyphs.end()) {
+            delete *glyphIt;
+            _glyphs.erase(glyphIt);
+        }
+        _tileGlyphs.erase(it);
+    }
 }
 
 /*

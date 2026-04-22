@@ -5,6 +5,22 @@
 #include <glm/glm.hpp>
 #include "Vertex.h"
 
+struct TilePos {
+    int x, y;
+    bool operator==(const TilePos& other) const {
+        return x == other.x && y == other.y;
+    }
+};
+
+namespace std {
+    template <>
+    struct hash<TilePos> {
+        std::size_t operator()(const TilePos& k) const {
+            return std::hash<int>()(k.x) ^ (std::hash<int>()(k.y) << 1);
+        }
+    };
+};
+
 namespace FunkyEngine {
     enum class GlyphSortType {
         NONE,
@@ -65,13 +81,16 @@ namespace FunkyEngine {
 
             // Render and actually draw
             void renderBatch();
-            
 
+            void addGlyphAt(int x, int y, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA);
+            void removeGlyphAt(int x, int y);
+            
         private:
             GLuint _vbo;
             GLuint _vao;
 
             std::vector<Glyph*> _glyphs;
+            std::unordered_map<TilePos, Glyph*> _tileGlyphs;
             GlyphSortType _sortType;
             std::vector<RenderBatch> _renderBatches;
 

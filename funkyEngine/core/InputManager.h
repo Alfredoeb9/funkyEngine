@@ -10,6 +10,7 @@ namespace FunkyEngine {
             std::unordered_map<unsigned int, bool> _keyMap;         // Map to track the current state of keys (pressed or not)
             glm::vec2 _mouseCoords;
 
+            bool wasKeyDown(unsigned int keyID); // Helper function to check if a key was down in the previous frame (used for detecting key presses, hotkeys)
 
         public:
             InputManager();
