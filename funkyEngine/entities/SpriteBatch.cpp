@@ -4,12 +4,76 @@
 #include <iostream>
 #include <vector>
 
+// Glyph constructor that sets up all parameters 
+FunkyEngine::Glyph::Glyph(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint Texture, float Depth, const FunkyEngine::Vertex::ColorRGBA& color) :
+    texture(Texture),
+    depth(Depth) {
+
+    topLeft.color = color;
+    topLeft.setPosition(destRect.x, destRect.y + destRect.w);
+    topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
+
+    bottomLeft.color = color;
+    bottomLeft.setPosition(destRect.x, destRect.y);
+    bottomLeft.setUV(uvRect.x, uvRect.y);
+
+    bottomRight.color = color;
+    bottomRight.setPosition(destRect.x + destRect.z, destRect.y);
+    bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
+
+    topRight.color = color;
+    topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);
+    topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
+}
+
+FunkyEngine::Glyph::Glyph(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint Texture, float Depth, const FunkyEngine::Vertex::ColorRGBA& color, float angle) :
+    texture(Texture),
+    depth(Depth) {
+
+    glm::vec2 halfDims(destRect.z / 2.0f, destRect.w / 2.0f);
+
+    // Get points centered at origin
+    glm::vec2 tl(-halfDims.x, halfDims.y);
+    glm::vec2 bl(-halfDims.x, -halfDims.y);
+    glm::vec2 br(halfDims.x, -halfDims.y);
+    glm::vec2 tr(halfDims.x, halfDims.y);
+
+    // Rotate the points
+    tl = rotatePoint(tl, angle) + halfDims;
+    bl = rotatePoint(bl, angle) + halfDims;
+    br = rotatePoint(br, angle) + halfDims;
+    tr = rotatePoint(tr, angle) + halfDims;
+
+    topLeft.color = color;
+    topLeft.setPosition(destRect.x + tl.x, destRect.y + tl.y);
+    topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
+
+    bottomLeft.color = color;
+    bottomLeft.setPosition(destRect.x + bl.x, destRect.y + bl.y);
+    bottomLeft.setUV(uvRect.x, uvRect.y);
+
+    bottomRight.color = color;
+    bottomRight.setPosition(destRect.x + br.x, destRect.y + br.y);
+    bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
+
+    topRight.color = color;
+    topRight.setPosition(destRect.x + tr.x, destRect.y + tr.y);
+    topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
+}
+
+glm::vec2 FunkyEngine::Glyph::rotatePoint(const glm::vec2& pos, float angle) {
+    glm::vec2 newv;
+    newv.x = pos.x * cos(angle) - pos.y * sin(angle);
+    newv.y = pos.x * sin(angle) + pos.y * cos(angle);
+    return newv;
+}
+
 FunkyEngine::SpriteBatch::SpriteBatch() : _vbo(0), _vao(0) {
 
 }
 
 FunkyEngine::SpriteBatch::~SpriteBatch() {
-
+    // Empty
 }
 
 void FunkyEngine::SpriteBatch::init() {
@@ -27,47 +91,41 @@ void FunkyEngine::SpriteBatch::begin(GlyphSortType sortType) {
     _sortType = sortType;
     _renderBatches.clear();     // Change the size back to zero when we begin
 
-    // Delete all allocated glyphs
-    for (int i = 0; i < _glyphs.size(); i++) {
-        delete _glyphs[i];
-    }
-    
+    // This clears the vector but KEEPS the memory allocated.
+    // Next frame, emplace_back will just overwrite the old memory.
     _glyphs.clear();
+    _glyphPointers.clear();
+    _tileGlyphs.clear();
+
+    // Reserve enough space for the most sprites you expect.
+    // This prevents reallocation and keeps pointers valid!
+    if (_glyphs.capacity() < 10000) {
+        _glyphs.reserve(10000);
+        _glyphPointers.reserve(10000);
+    }
 }
  
 /*
     Sort the glyphs and generate batches form the sorted glyphs
 */
 void FunkyEngine::SpriteBatch::end() {
+    // Set up all pointers for fast sorting
+    // _glyphPointers.resize(_glyphs.size());
+
+    // loop though _glyphs and have _glyphPointers[i] point to the refernce of _glyphs[i]
+    // for (int i = 0; i < _glyphs.size(); i++) {
+    //     _glyphPointers[i] = &_glyphs[i];
+    // }
+
+    // Then sort our glyphs
     sortGlyphs();
     createRenderBatches();
 }
 
 // Add to batch
 void FunkyEngine::SpriteBatch::draw(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA ) {
-    Glyph* newGlyph = new Glyph;
-
-    newGlyph->texture = texture;
-    newGlyph->depth = depth;
-
-    // Vertices
-    newGlyph->topLeft.color = colorRGBA;
-    newGlyph->topLeft.setPosition(destRect.x, destRect.y + destRect.w);    // the y element of is in uvRect.w or uvRect[3]
-    newGlyph->topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
-
-    newGlyph->bottomLeft.color = colorRGBA;
-    newGlyph->bottomLeft.setPosition(destRect.x, destRect.y); 
-    newGlyph->bottomLeft.setUV(uvRect.x, uvRect.y);
-
-    newGlyph->bottomRight.color = colorRGBA;
-    newGlyph->bottomRight.setPosition(destRect.x + destRect.z, destRect.y); 
-    newGlyph->bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
-
-    newGlyph->topRight.color = colorRGBA;
-    newGlyph->topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);    // the y element of is in uvRect.w or uvRect[3]
-    newGlyph->topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
-
-    _glyphs.push_back(newGlyph);
+    _glyphs.emplace_back(destRect, uvRect, texture, depth, colorRGBA);
+    _glyphPointers.push_back(&_glyphs.back());                              // Safe ONLY because of reserve()
 }
 
 // Loop through all batches render and actually draw
@@ -85,46 +143,46 @@ void FunkyEngine::SpriteBatch::renderBatch() {
 
 void FunkyEngine::SpriteBatch::addGlyphAt(int x, int y, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA) {
     TilePos pos{x, y};
+    glm::vec4 destRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
     // Remove existing glyph at this position if it exists
     removeGlyphAt(x, y);
 
-    Glyph* newGlyph = new Glyph;
-    newGlyph->texture = texture;
-    newGlyph->depth = depth;
+    // Create the glyph at the end of the vector
+    _glyphs.emplace_back(destRect, uvRect, texture, depth, colorRGBA);
+    _glyphPointers.push_back(&_glyphs.back());
 
-    glm::vec4 destRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+    // Store the index (the current last element) in the map
+    _tileGlyphs[pos] = _glyphs.size() - 1;
 
-    // Set up vertices (same as your draw function)
-    newGlyph->topLeft.color = colorRGBA;
-    newGlyph->topLeft.setPosition(destRect.x, destRect.y + destRect.w);
-    newGlyph->topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
-
-    newGlyph->bottomLeft.color = colorRGBA;
-    newGlyph->bottomLeft.setPosition(destRect.x, destRect.y);
-    newGlyph->bottomLeft.setUV(uvRect.x, uvRect.y);
-
-    newGlyph->bottomRight.color = colorRGBA;
-    newGlyph->bottomRight.setPosition(destRect.x + destRect.z, destRect.y);
-    newGlyph->bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
-
-    newGlyph->topRight.color = colorRGBA;
-    newGlyph->topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);
-    newGlyph->topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
-
-    _tileGlyphs[pos] = newGlyph;
-    _glyphs.push_back(newGlyph); // For batching
 }
 
+// Finds the pointer in a map, locating its twin in the vector, delete the memory to prevent the leak, and then clean up both container
 void FunkyEngine::SpriteBatch::removeGlyphAt(int x, int y) {
     TilePos pos{x, y};
     auto it = _tileGlyphs.find(pos);
+    
     if (it != _tileGlyphs.end()) {
-        // Remove from _glyphs vector
-        auto glyphIt = std::find(_glyphs.begin(), _glyphs.end(), it->second);
-        if (glyphIt != _glyphs.end()) {
-            delete *glyphIt;
-            _glyphs.erase(glyphIt);
+        int targetIndex = it->second;
+        int lastIndex = (int)_glyphs.size() - 1;
+
+        // If the one we are deleting is NOT the last one, 
+        // move the last one into the gap to keep the vector packed.
+        if (targetIndex < lastIndex) {
+            _glyphs[targetIndex] = _glyphs.back();
+            
+            // CRITICAL: We moved the 'back' glyph, so we must find it 
+            // in the map and update its index to targetIndex.
+            // Note: This requires knowing the TilePos of the last glyph.
+            // If Glyph doesn't store its own pos, we can find it via its rect:
+            TilePos lastGlyphPos = { 
+                (int)(_glyphs[targetIndex].bottomLeft.position.x / TILE_WIDTH), 
+                (int)(_glyphs[targetIndex].bottomLeft.position.y / TILE_WIDTH) 
+            };
+            _tileGlyphs[lastGlyphPos] = targetIndex;
         }
+
+        // Remove the last element and the map entry
+        _glyphs.pop_back();
         _tileGlyphs.erase(it);
     }
 }
@@ -135,82 +193,55 @@ void FunkyEngine::SpriteBatch::removeGlyphAt(int x, int y) {
             and if we get a glyph with a new texture we need to make a new batch
 */
 void FunkyEngine::SpriteBatch::createRenderBatches() {
+    // 1. Always clear previous batches before rebuilding
+    _renderBatches.clear();
+
+    if (_glyphPointers.empty()) return;
+
+    // 2. Prepare vertex storage
     std::vector<Vertex> vertices;
-
-    // Tell our vector how much we think our size is ahead of time
-    // Remember vectors can allocate more and take away
-    vertices.resize(_glyphs.size() * 6);
-
-    // No batches to create
-    if (_glyphs.empty()) return;
+    vertices.resize(_glyphPointers.size() * 6);   // Allocates memory but doesn't "zero" it
 
     int offset = 0;
-    int currentVertex = 0;
+    int currentVertex = 0; // currentVertex
 
-    // Makes a intermediate batch on the stack
-    // RenderBatch myBatch(0, 6, _glyphs[0]->texture);
-    // push_back() makes a copy of the batch into _renderBatches
-    _renderBatches.emplace_back(offset, 6, _glyphs[0]->texture);
+    // 3. Initialize the first batch
+    // We use . instead of -> because _glyphs[0] is an object, not a pointer
+    _renderBatches.emplace_back(offset, 6, _glyphPointers[0]->texture);
 
-    vertices[currentVertex] = _glyphs[0]->topLeft;
-    currentVertex++;    // Continue to the next vertex element
+    // Helper to fill vertices (avoids repeating this 6 times per glyph)
+    auto fillVertices = [&](int index, int& vIdx) {
+        vertices[vIdx++] = _glyphPointers[index]->topLeft;
+        vertices[vIdx++] = _glyphPointers[index]->bottomLeft;
+        vertices[vIdx++] = _glyphPointers[index]->bottomRight;
+        vertices[vIdx++] = _glyphPointers[index]->bottomRight;
+        vertices[vIdx++] = _glyphPointers[index]->topRight;
+        vertices[vIdx++] = _glyphPointers[index]->topLeft;
+    };
 
-    vertices[currentVertex] = _glyphs[0]->bottomLeft;
-    currentVertex++;    // Continue to the next vertex element
-
-    vertices[currentVertex] = _glyphs[0]->bottomRight;
-    currentVertex++;    // Continue to the next vertex element
-
-    vertices[currentVertex] = _glyphs[0]->bottomRight;
-    currentVertex++;    // Continue to the next vertex element
-
-    vertices[currentVertex] = _glyphs[0]->topRight;
-    currentVertex++;    // Continue to the next vertex element
-
-    vertices[currentVertex] = _glyphs[0]->topLeft;
-    currentVertex++;    // Continue to the next vertex element
-
+    // Fill first glyph
+    fillVertices(0, currentVertex);
     offset += 6;
 
-    // Loop through the rest of the glyphs and emplace a new render back
-    for (int currentGlyph = 1; currentGlyph < _glyphs.size(); currentGlyph++) {
-        // If current texture is different from previous texture then emplace a new render back
-        // else increase the size of the current renderBatch
-        if (_glyphs[currentGlyph]->texture != _glyphs[currentGlyph - 1]->texture) {
-            _renderBatches.emplace_back(offset, 6, _glyphs[currentGlyph]->texture);
+    // 4. Loop through the rest of the glyphs
+    for (size_t i = 1; i < _glyphPointers.size(); i++) {
+        // Check if texture changed to start a new batch
+        if (_glyphPointers[i]->texture != _glyphPointers[i - 1]->texture) {
+            _renderBatches.emplace_back(offset, 6, _glyphPointers[i]->texture);
         } else {
-            _renderBatches.back().numVertices += 6;     // back() to get last element and add 6 more vertices
+            _renderBatches.back().numVertices += 6;
         }
 
-        vertices[currentVertex] = _glyphs[currentGlyph]->topLeft;
-        currentVertex++;    // Continue to the next vertex element
-
-        vertices[currentVertex] = _glyphs[currentGlyph]->bottomLeft;
-        currentVertex++;    // Continue to the next vertex element
-
-        vertices[currentVertex] = _glyphs[currentGlyph]->bottomRight;
-        currentVertex++;    // Continue to the next vertex element
-
-        vertices[currentVertex] = _glyphs[currentGlyph]->bottomRight;
-        currentVertex++;    // Continue to the next vertex element
-
-        vertices[currentVertex] = _glyphs[currentGlyph]->topRight;
-        currentVertex++;    // Continue to the next vertex element
-
-        vertices[currentVertex] = _glyphs[currentGlyph]->topLeft;
-        currentVertex++;    // Continue to the next vertex element
-
+        fillVertices(i, currentVertex);
         offset += 6;
     }
 
-    // Bind and Upload our vbo
+    // 5. Upload to GPU
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    // This will orphan the buffer
+    // Orphan the buffer for performance
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-    // Upload the data
+    // Upload the actual data
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
-
-    // Clean the buffer
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -269,17 +300,17 @@ void FunkyEngine::SpriteBatch::sortGlyphs() {
     // Stable_sort(): guarantees that two elements will remain the same order
     
     if (_sortType == GlyphSortType::BACK_TO_FRONT) {
-        std::stable_sort(_glyphs.begin(), _glyphs.end(), compareBackToFront);
+        std::stable_sort(_glyphPointers.begin(), _glyphPointers.end(), compareBackToFront);
         return;
     }
 
     if (_sortType == GlyphSortType::FRONT_TO_BACK) {
-        std::stable_sort(_glyphs.begin(), _glyphs.end(), compareFrontToBack);
+        std::stable_sort(_glyphPointers.begin(), _glyphPointers.end(), compareFrontToBack);
         return;
     }
 
     if (_sortType == GlyphSortType::TEXTURE) {
-        std::stable_sort(_glyphs.begin(), _glyphs.end(), compareTexture);
+        std::stable_sort(_glyphPointers.begin(), _glyphPointers.end(), compareTexture);
         return;
     }
 
@@ -289,14 +320,14 @@ void FunkyEngine::SpriteBatch::sortGlyphs() {
 /*
     Return true if the value of A's depth is < the value of B's depth
 */
-bool FunkyEngine::SpriteBatch::compareFrontToBack(Glyph* a, Glyph* b) {
+bool FunkyEngine::SpriteBatch::compareFrontToBack(const Glyph* a, const Glyph* b) {
     return (a->depth < b->depth);
 }
 
 /*
     Return true if the value of A's depth is > the value of B's depth
 */
-bool FunkyEngine::SpriteBatch::compareBackToFront(Glyph* a, Glyph* b) {
+bool FunkyEngine::SpriteBatch::compareBackToFront(const Glyph* a, const Glyph* b) {
     return (a->depth > b->depth);
 }
 
@@ -305,6 +336,6 @@ bool FunkyEngine::SpriteBatch::compareBackToFront(Glyph* a, Glyph* b) {
     * Helps put all texures into one batch if they are all the same
     * Keeps us from using more batches then we need.
 */
-bool FunkyEngine::SpriteBatch::compareTexture(Glyph* a, Glyph* b) {
+bool FunkyEngine::SpriteBatch::compareTexture(const Glyph* a, const Glyph* b) {
     return (a->texture < b->texture);
 }

@@ -33,14 +33,24 @@ namespace FunkyEngine {
     // Type of texture to use
     // The depth of the texture
     // We want to sort glyphs by texture bc each batch we draw has to have the same texture
-    struct Glyph {
-        GLuint texture;
-        float depth;
+    class Glyph {
+        private:
+            // Rotates a point about (0,0) by angle 
+            glm::vec2 rotatePoint(const glm::vec2& pos, float angle);
+        
+        public:
+            Glyph() {};
+            Glyph(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint Texture, float Depth, const FunkyEngine::Vertex::ColorRGBA& color);
+            Glyph(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint Texture, float Depth, const FunkyEngine::Vertex::ColorRGBA& color, float angle);
 
-        Vertex topLeft;
-        Vertex bottomLeft;
-        Vertex topRight;
-        Vertex bottomRight;
+
+            GLuint texture;
+            float depth;
+
+            Vertex topLeft;
+            Vertex bottomLeft;
+            Vertex topRight;
+            Vertex bottomRight;
     };
 
     /*
@@ -83,20 +93,22 @@ namespace FunkyEngine {
             void renderBatch();
 
             void addGlyphAt(int x, int y, const glm::vec4& uvRect, GLuint texture, float depth, const Vertex::ColorRGBA& colorRGBA);
+            
             void removeGlyphAt(int x, int y);
             
         private:
             GLuint _vbo;
             GLuint _vao;
 
-            std::vector<Glyph*> _glyphs;
-            std::unordered_map<TilePos, Glyph*> _tileGlyphs;
+            std::vector<Glyph*> _glyphPointers;              // Used for sortGlyphs
+            std::vector<Glyph> _glyphs;                      // Vector of Glyph pointers - Remember to delete in deconstructor
+            std::unordered_map<TilePos, int> _tileGlyphs;    // unordered_map of TilePos and Glyph pointer   - Remember to delete in deconstructor
             GlyphSortType _sortType;
             std::vector<RenderBatch> _renderBatches;
 
-            static bool compareFrontToBack(Glyph* a, Glyph* b);
-            static bool compareBackToFront(Glyph* a, Glyph* b);
-            static bool compareTexture(Glyph* a, Glyph* b);
+            static bool compareFrontToBack(const Glyph* a, const Glyph* b);
+            static bool compareBackToFront(const Glyph* a, const Glyph* b);
+            static bool compareTexture(const Glyph* a, const Glyph* b);
 
             void createRenderBatches();
             void createVertexArray();
