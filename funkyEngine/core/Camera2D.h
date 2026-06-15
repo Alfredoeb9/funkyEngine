@@ -17,6 +17,8 @@ namespace FunkyEngine {
             // helps with projectile shooting
             glm::vec2 convertScreenCoordsToWorld(glm::vec2 screenCoords);
 
+            bool isBoxInView(const glm::vec2& position, const glm::vec2& dimensions);
+
             // Setters
             void setPosition(const glm::vec2& newPosition) {
                 _position = newPosition;

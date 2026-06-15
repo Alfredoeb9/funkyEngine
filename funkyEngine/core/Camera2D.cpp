@@ -59,3 +59,32 @@ glm::vec2 FunkyEngine::Camera2D::convertScreenCoordsToWorld(glm::vec2 screenCoor
 
     return screenCoords;
 }
+
+// Does the same thing as isOnScreen (not sure what i want)
+bool FunkyEngine::Camera2D::isBoxInView(const glm::vec2& position, const glm::vec2& dimensions) {
+    glm::vec2 scaledScreenDimensions = glm::vec2(_screenWidth, _screenHeight) / (_scale);
+    
+    // The minimum distance before a collisions occurs
+    const float MIN_DISTANCE_X = dimensions.x / 2.0f + scaledScreenDimensions.x / 2.0f;
+    const float MIN_DISTANCE_Y = dimensions.x / 2.0f + scaledScreenDimensions.y / 2.0f;
+
+    // We'll get the center distance of a agent to the center distance of a tile
+    // and get the x,y components of that to get the distance of the two
+    // then compare that against the radius of the Agent to determine the collision
+    glm::vec2 centerPos = position + dimensions / 2.0f;     // Get the center  pos of the player
+    // Center position of the camera
+    glm::vec2 centerCameraPos = _position + glm::vec2(scaledScreenDimensions.x / 2.0f, scaledScreenDimensions.y / 2.0f);
+    // Vector from input to the camera
+    glm::vec2 distVec = centerPos - centerCameraPos;
+
+    float xDepth = MIN_DISTANCE_X - abs(distVec.x);           // Switch these to positive
+    float yDepth = MIN_DISTANCE_Y - abs(distVec.y);           // Switch these to positive
+
+    // If true we are colliding
+    if (xDepth > 0 && yDepth > 0) {
+        // There was a collision
+        return true;
+    }
+
+    return false;
+}
