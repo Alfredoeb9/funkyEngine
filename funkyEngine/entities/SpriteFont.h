@@ -24,14 +24,14 @@
 #ifndef SpriteFont_h__
 #define SpriteFont_h__
 
-// #include <TTF/SDL_ttf.h>
+#include <SDL_ttf.h>
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>
 
-#include "Vertex.h"
+#include "entities/Vertex.h"
 
-namespace Bengine {
+namespace FunkyEngine {
 
     struct GLTexture;
     class SpriteBatch;
@@ -74,7 +74,7 @@ namespace Bengine {
 
         /// Draws using a spritebatch
         void draw(SpriteBatch& batch, const char* s, glm::vec2 position, glm::vec2 scaling, 
-                  float depth, ColorRGBA8 tint, Justification just = Justification::LEFT);
+                  float depth, FunkyEngine::Vertex::ColorRGBA tint, Justification just = Justification::LEFT);
     private:
         static std::vector<int>* createRows(glm::ivec4* rects, int rectsLength, int r, int padding, int& w);
 

@@ -33,6 +33,7 @@ project(Bengine CXX)
 #     GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
 # )
 # FetchContent_MakeAvailable(glm)
+set(SDL2_ttf_DIR "C:/Libraries/SDL2_ttf-2.24.0/x86_64-w64-mingw32/lib/cmake/SDL2_ttf")
 
 # 4. Find System Packages (Must be called BEFORE linking targets like OpenGL::GL)
 find_package(OpenGL REQUIRED)
@@ -40,6 +41,7 @@ find_package(GLEW REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(glm REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 set(Bengine_SOURCES
     funkyEngine/core/Camera2D.cpp
@@ -50,6 +52,7 @@ set(Bengine_SOURCES
     funkyEngine/core/InputManager.cpp
     funkyEngine/core/Timing.cpp
     funkyEngine/entities/Sprites.cpp
+    funkyEngine/entities/SpriteFont.cpp
     funkyEngine/entities/SpriteBatch.cpp
     funkyEngine/graphics/ImageLoader.cpp
     funkyEngine/graphics/GLSLProgram.cpp
@@ -58,7 +61,9 @@ set(Bengine_SOURCES
     funkyEngine/FunkyEngine.cpp
 )
 
-add_library(Bengine STATIC ${Bengine_SOURCES})
+add_library(Bengine STATIC ${Bengine_SOURCES}
+    funkyEngine/core/Logger.h
+    funkyEngine/core/Logger.cpp)
 add_library(FunkyEngine ALIAS Bengine)
 
 # Tell anyone who links to Bengine where to find its header files
@@ -70,6 +75,7 @@ target_include_directories(Bengine PUBLIC
 target_link_libraries(Bengine PUBLIC 
     SDL2::SDL2
     SDL2_image::SDL2_image
+    SDL2_ttf::SDL2_ttf
     OpenGL::GL 
     GLEW::GLEW 
     glm::glm

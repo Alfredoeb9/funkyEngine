@@ -16,7 +16,7 @@ int closestPow2(int i) {
 
 #define MAX_TEXTURE_RES 4096
 
-namespace Bengine {
+namespace FunkyEngine {
 
     SpriteFont::SpriteFont(const char* font, int size, char cs, char ce) {
         init(font, size, cs, ce);
@@ -235,7 +235,7 @@ namespace Bengine {
     }
 
     void SpriteFont::draw(SpriteBatch& batch, const char* s, glm::vec2 position, glm::vec2 scaling, 
-                          float depth, ColorRGBA8 tint, Justification just /* = Justification::LEFT */) {
+                          float depth, FunkyEngine::Vertex::ColorRGBA tint, Justification just /* = Justification::LEFT */) {
         glm::vec2 tp = position;
         // Apply justification
         if (just == Justification::MIDDLE) {
