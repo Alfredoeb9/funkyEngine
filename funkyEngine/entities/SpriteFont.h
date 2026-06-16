@@ -64,7 +64,26 @@ namespace FunkyEngine {
     class SpriteFont {
         public:
             SpriteFont() {};
+            /**
+             * constructor: SpriteFont
+             * @description:
+             * - Overloaded constructor that initializes the SpriteFont with a specified font file, size,
+             * and a range of characters to include in the texture atlas. It calls the init function to set up the font resources.
+             * @param font: The file path to the TrueType font to load.
+             * @param size: The size of the font, the higher the size the better quality might crash if hight than 492x492
+             * @param cs: The first character in the range of characters to include in the texture atlas.
+             * @param ce: The last character in the range of characters to include in the texture atlas.
+             */
             SpriteFont(const char* font, int size, char cs, char ce);
+            
+            /**
+             * constructor: SpriteFont
+             * @description:
+             * - Overloaded constructor that initializes the SpriteFont with a specified font file, size,
+             * and a range of characters to include in the texture atlas. It calls the init function to set up the font resources.
+             * @param font: The file path to the TrueType font to load.
+             * @param size: The size of the font, the higher the size the better quality might crash if hight than 492x492 (uses ASCII from 32 to 126 by default)
+             */
             SpriteFont(const char* font, int size) :
                 SpriteFont(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR) {
             }
