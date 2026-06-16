@@ -1,5 +1,6 @@
 #include"ImageLoader.h"
 #include "core/Errors.h"
+#include "core/Logger.h"
 #include "picoPNG.h"
 #include "IOManager.h"
 
@@ -17,13 +18,15 @@ FunkyEngine::GLTexture FunkyEngine::ImageLoader::loadPNG(std::string filePath) {
     unsigned long width, height;
 
     if (IOManager::readFileToBuffer(filePath, in) == false) {
+        FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load PNG file to buffer: " + filePath);
         EngineErrors::fatalError("Failed to load PNG file to buffer!");
     }
 
     int errorCode = decodePNG(out, width, height, &(in[0]), in.size());
 
     if (errorCode != 0) {
-        EngineErrors::fatalError("decodePNG failed with error: " + errorCode);
+        FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "decodePNG failed with error: " + std::to_string(errorCode));
+        EngineErrors::fatalError("decodePNG failed with error: " + std::to_string(errorCode));
     }
 
     // generate our texture

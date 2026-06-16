@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Logger.h"
 #include <iostream>
 #include <string>
 
@@ -37,7 +38,7 @@ int FunkyEngine::Window::create(std::string windowName, int screenWidth, int scr
     SDL_GLContext glContext = SDL_GL_CreateContext(_sdlWindow);
     
     if (glContext == nullptr) {
-        std::cerr << "SDL_GL context could not be created" << SDL_GetError() << std::endl;
+        FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "SDL_GL context could not be created: " + std::string(SDL_GetError()));
         return false;
     }
 
@@ -51,7 +52,7 @@ int FunkyEngine::Window::create(std::string windowName, int screenWidth, int scr
     // Initialize GLEW right after context creation
     GLenum error = glewInit();
     if (error != GLEW_OK) {
-        std::cerr << "Could not initialize GLEW! " << glewGetErrorString(error) << std::endl;
+        FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "OpenGL Version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
         return false;
     }
 

@@ -187,25 +187,28 @@ void FunkyEngine::SpriteBatch::removeGlyphAt(int x, int y) {
     }
 }
 
-/*
-    Create batches
-        * Loop through our array of glyphs for each glyph add it to a batch 
-            and if we get a glyph with a new texture we need to make a new batch
-*/
+/**
+ * function: createRenderBatches
+ * @description:
+ * - This function creates render batches from the sorted glyphs. It iterates through the sorted glyph pointers, grouping them into batches based on their texture. Each batch contains a contiguous set of vertices that can be rendered together with a single draw call, optimizing rendering performance by minimizing texture binds and draw calls.
+ *      The function also uploads the vertex data to the GPU using a Vertex Buffer Object (V
+ * BO) for efficient rendering.
+ * @return: void
+ */
 void FunkyEngine::SpriteBatch::createRenderBatches() {
-    // 1. Always clear previous batches before rebuilding
+    // Always clear previous batches before rebuilding
     _renderBatches.clear();
 
     if (_glyphPointers.empty()) return;
 
-    // 2. Prepare vertex storage
+    // Prepare vertex storage
     std::vector<Vertex> vertices;
     vertices.resize(_glyphPointers.size() * 6);   // Allocates memory but doesn't "zero" it
 
     int offset = 0;
     int currentVertex = 0; // currentVertex
 
-    // 3. Initialize the first batch
+    // Initialize the first batch
     // We use . instead of -> because _glyphs[0] is an object, not a pointer
     _renderBatches.emplace_back(offset, 6, _glyphPointers[0]->texture);
 
@@ -223,7 +226,7 @@ void FunkyEngine::SpriteBatch::createRenderBatches() {
     fillVertices(0, currentVertex);
     offset += 6;
 
-    // 4. Loop through the rest of the glyphs
+    // Loop through the rest of the glyphs
     for (size_t i = 1; i < _glyphPointers.size(); i++) {
         // Check if texture changed to start a new batch
         if (_glyphPointers[i]->texture != _glyphPointers[i - 1]->texture) {
@@ -236,7 +239,7 @@ void FunkyEngine::SpriteBatch::createRenderBatches() {
         offset += 6;
     }
 
-    // 5. Upload to GPU
+    // Upload to GPU
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     // Orphan the buffer for performance
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);

@@ -1,4 +1,5 @@
 #include "TextureCache.h"
+#include "Logger.h"
 #include "graphics/ImageLoader.h"
 
 #include <iostream>
@@ -10,7 +11,15 @@ FunkyEngine::TextureCache::TextureCache() {
 FunkyEngine::TextureCache::~TextureCache() {
     
 }
-
+/**
+ * function: getTexture
+ * @description:
+ * - This function retrieves a texture from the cache based on the provided texture path. 
+ *      If the texture is not already cached, it loads the texture using the ImageLoader, stores it in the cache, and returns it. 
+ *      If the texture is already cached, it simply returns the cached texture.
+ * @param texturePath: The file path of the texture to retrieve.
+ * @return: The GLTexture object corresponding to the requested texture.
+ */
 FunkyEngine::GLTexture FunkyEngine::TextureCache::getTexture(std::string texturePath) {
     // traverse the nodes looking for existing one
     // if it reaches a nullptr it going to return a iterator that 
@@ -29,13 +38,13 @@ FunkyEngine::GLTexture FunkyEngine::TextureCache::getTexture(std::string texture
         // insert into map
         _textureMap.insert(make_pair(texturePath, newTexture));
 
-        std::cout << "Loaded Texture!\n";
+        FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Texture loaded: " + texturePath);
 
 
         return newTexture;
     }
 
-    // std::cout << "Used Cached Texture!\n";
+    FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Texture used from cache: " + texturePath);
 
     return mit->second;
 }

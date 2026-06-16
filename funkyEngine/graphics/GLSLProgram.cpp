@@ -1,7 +1,9 @@
 #include "GLSLProgram.h"
 #include <vector>
 #include "core/Errors.h"
+#include "core/Logger.h"
 #include <fstream>
+#include <cmath>
 
 FunkyEngine::GLSLProgram::GLSLProgram() : _programID(0), _vertexShaderID(0), _fragmentShaderID(0), _numAttributes(0) {
 
@@ -156,8 +158,8 @@ void FunkyEngine::GLSLProgram::compileShader(const std::string& filePath, GLuint
         // exit with failure
         glDeleteShader(id);    // Don't leak shader
 
-        std::printf("%s\n", &(errorLog[0]));
-        EngineErrors::fatalError("Shader " + filePath + " failed to compile");
+        FunkyEngine::Logger::log(FunkyEngine::LogLevel::RENDER_ERROR, 
+            "Shader compilation failed: " + std::string(errorLog.begin(), errorLog.end()));
         return;
     }
 }
