@@ -4,6 +4,13 @@
 
 #include <SDL.h>
 
+/**
+ * function: closestPow2
+ * @description:
+ * - This function takes an integer input and returns the closest power of 2 that is greater
+ *  than or equal to the input value. It works by decrementing the input value, then repeatedly 
+ *  right-shifting it until it becomes zero, while left-shifting a power of 2 variable to keep track of the closest power of 2. Finally, it returns the calculated power of 2.
+ */
 int closestPow2(int i) {
     i--;
     int pi = 1;
@@ -14,37 +21,62 @@ int closestPow2(int i) {
     return pi;
 }
 
+// define the maximum texture resolution (width and height) for the font atlas
 #define MAX_TEXTURE_RES 4096
 
 namespace FunkyEngine {
-
+    /**
+     * function: createRows
+     * @description:
+     * - This function takes an array of glyph rectangles, the number of rectangles, 
+     *   the desired number of rows, padding between glyphs, and a reference to an integer for width. 
+     * 
+     */
     SpriteFont::SpriteFont(const char* font, int size, char cs, char ce) {
         init(font, size, cs, ce);
     }
 
+    /**
+     * function: init
+     * @description:
+     * - This function initializes the SpriteFont by loading a TrueType font, creating a texture atlas
+     */
     void SpriteFont::init(const char* font, int size) {
         init(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR);
     }
 
+    /**
+     * function: init
+     * @description:
+     * - This function initializes the SpriteFont by loading a TrueType font, creating a texture
+     */
     void SpriteFont::init(const char* font, int size, char cs, char ce) {
         // Initialize SDL_ttf
         if (!TTF_WasInit()) {
             TTF_Init();
         }
+        // Load the font and get its height
         TTF_Font* f = TTF_OpenFont(font, size);
+
+        // Check if the font was loaded successfully
         if (f == nullptr) {
             fprintf(stderr, "Failed to open TTF font %s\n", font);
             fflush(stderr);
             throw 281;
         }
+        // Get the font height and set up the character region
         _fontHeight = TTF_FontHeight(f);
         _regStart = cs;
         _regLength = ce - cs + 1;
         int padding = size / 8;
 
-        // First neasure all the regions
+        // First measure all the regions
         glm::ivec4* glyphRects = new glm::ivec4[_regLength];
         int i = 0, advance;
+
+        // Loop through the specified character range and get the glyph metrics for each character, storing them in the glyphRects array. 
+        // The metrics include the minimum and maximum x and y coordinates of the glyph, as well as the advance width 
+        // (the horizontal distance to move the cursor after rendering the glyph). The function TTF_GlyphMetrics is used to retrieve these metrics for each character in the specified range.
         for (char c = cs; c <= ce; c++) {
             TTF_GlyphMetrics(f, c, &glyphRects[i].x, &glyphRects[i].z, &glyphRects[i].y, &glyphRects[i].w, &advance);
             glyphRects[i].z -= glyphRects[i].x;
@@ -57,6 +89,8 @@ namespace FunkyEngine {
         // Find best partitioning of glyphs
         int rows = 1, w, h, bestWidth = 0, bestHeight = 0, area = MAX_TEXTURE_RES * MAX_TEXTURE_RES, bestRows = 0;
         std::vector<int>* bestPartition = nullptr;
+
+        // This loop tries different numbers of rows to find the best way to pack the glyphs into a texture atlas.
         while (rows <= _regLength) {
             h = rows * (padding + _fontHeight) + padding;
             auto gr = createRows(glyphRects, _regLength, rows, padding, w);
@@ -211,9 +245,19 @@ namespace FunkyEngine {
         return l;
     }
 
+    /**
+     * function: measure
+     * @description:
+     * - This function calculates the dimensions of a given string of text by iterating through each character in the 
+     *   string, checking for newline characters to adjust the height and width accordingly, and using the glyph metrics to calculate the total width of the text. It returns a glm::vec2 containing the calculated width and height of the text.
+     * 
+     */
     glm::vec2 SpriteFont::measure(const char* s) {
         glm::vec2 size(0, _fontHeight);
         float cw = 0;
+
+        // Loop through each character in the string, checking for newline characters 
+        // to adjust the height and width accordingly, and using the glyph metrics to calculate the total width of the text. It returns a glm::vec2 containing the calculated width and height of the text.
         for (int si = 0; s[si] != 0; si++) {
             char c = s[si];
             if (s[si] == '\n') {
@@ -229,11 +273,22 @@ namespace FunkyEngine {
                 cw += _glyphs[gi].size.x;
             }
         }
+
+        // Check for last line
         if (size.x < cw)
             size.x = cw;
         return size;
     }
 
+    /**
+     * function: draw
+     * @description:
+     * - This function draws text using a SpriteBatch by iterating through each character in the 
+     *   input string, calculating the destination rectangle for each glyph based on the current 
+     *   position and scaling, and then calling the draw method of the SpriteBatch to render each 
+     *   glyph with the specified texture, depth, and tint. It also handles text justification by 
+     *   adjusting the starting position of the text based on the measured width of the string and the desired justification (left, middle, or right).
+     */
     void SpriteFont::draw(SpriteBatch& batch, const char* s, glm::vec2 position, glm::vec2 scaling, 
                           float depth, FunkyEngine::Vertex::ColorRGBA tint, Justification just /* = Justification::LEFT */) {
         glm::vec2 tp = position;
@@ -243,6 +298,11 @@ namespace FunkyEngine {
         } else if (just == Justification::RIGHT) {
             tp.x -= measure(s).x * scaling.x;
         }
+
+        // Loop through each character in the input string, calculating the destination rectangle for each glyph based on the current
+        // position and scaling, and then calling the draw method of the SpriteBatch to render each
+        // glyph with the specified texture, depth, and tint. It also handles text justification by
+        // adjusting the starting position of the text based on the measured width of the string and the desired justification (left, middle, or right).
         for (int si = 0; s[si] != 0; si++) {
             char c = s[si];
             if (s[si] == '\n') {
