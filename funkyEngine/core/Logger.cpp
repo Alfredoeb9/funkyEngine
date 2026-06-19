@@ -24,7 +24,8 @@ namespace FunkyEngine {
 
         // Check if the logger is already initialized
         if (_isInitialized) {
-            log(LogLevel::WARNING, "Logger is already initialized.");
+            // log(LogLevel::WARNING, "Logger is already initialized.");
+            logInternal(LogLevel::WARNING, "Logger is already initialized.");
             return;
         }
         // Open the log file in output mode with truncation (clears existing content)
@@ -33,9 +34,9 @@ namespace FunkyEngine {
 
         // Log the initialization status
         if (_isInitialized) {
-            log(LogLevel::INFO, "Logger initialized successfully.");
+            logInternal(LogLevel::INFO, "Logger initialized successfully.");
         } else {
-            log(LogLevel::CRITICAL, "Failed to initialize logger.");
+            logInternal(LogLevel::CRITICAL, "Failed to initialize logger.");
         }
     }
 
@@ -50,7 +51,7 @@ namespace FunkyEngine {
 
         // Log shutdown message before closing the file
         if (_logFile.is_open()) {
-            log(LogLevel::INFO, "Shutting down logger.");
+            logInternal(LogLevel::INFO, "Shutting down logger.");
             _logFile.close();
         }
 
@@ -74,25 +75,27 @@ namespace FunkyEngine {
     }
 
     void Logger::log(LogLevel level, const std::string& message) {
-        // Ensure thread safety when logging messages
+
         std::lock_guard<std::mutex> lock(_logMutex);
 
         if (!_isInitialized) {
             std::cerr << "Logger not initialized. Message: " << message << std::endl;
             return;
         }
+        logInternal(level, message);
+    }
 
-        // Get the current time for timestamping log messages
-        // auto now = std::chrono::system_clock::now();
-        // auto in_time_t = std::chrono::system_clock::to_time_t(now);
-        // auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    void Logger::logInternal(LogLevel level, const std::string& message) {
+        // Get the current time for timestamping
         auto now = std::chrono::system_clock::now();
         auto timeTime = std::chrono::system_clock::to_time_t(now);
-        auto localTime = std::localtime(&timeTime);
+        
+        // Note: use localtime_s on Windows if compiler warns about thread safety for std::localtime
+        auto localTime = std::localtime(&timeTime); 
 
         // Format: [HH:MM:SS] [LEVEL] Message
         std::stringstream ss;
-        ss << std::put_time(localTime, "[%H:%M:%S]") << " " << getLevelString(level) << " " << message << "\n";
+        // ss << std::put_time(localTime, "[%H:%M:%S]") << " " << getLevelString(level) << " " << message << "\n";
         std::string formattedMessage = ss.str();
 
         // Output to Console via standard streams based on log level
@@ -102,14 +105,13 @@ namespace FunkyEngine {
             std::cout << formattedMessage;
         }
 
-        // Output to File
-        if (_isInitialized) {
+        // Output to File (only if the file is genuinely ready to write)
+        if (_isInitialized && _logFile.is_open()) {
             _logFile << formattedMessage;
-            _logFile.flush(); // Force write to disk so it saves even during a crash
+            _logFile.flush(); 
         }
 
         // Mirror to SDL's internal system logs
-        // This ensures the OS platform handles it cleanly if compiled for release distributions
         SDL_Log("%s", formattedMessage.c_str());
     }
 }

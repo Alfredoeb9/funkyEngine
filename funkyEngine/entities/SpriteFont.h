@@ -43,47 +43,76 @@ namespace FunkyEngine {
         glm::vec2 size;
     };
 
-#define FIRST_PRINTABLE_CHAR ((char)32)
-#define LAST_PRINTABLE_CHAR ((char)126)
+    // define the first and last printable characters in the ASCII table
+    #define FIRST_PRINTABLE_CHAR ((char)32)
+    #define LAST_PRINTABLE_CHAR ((char)126)
 
-    /// For text justification
+    // For text justification
     enum class Justification {
         LEFT, MIDDLE, RIGHT
     };
 
+    /**
+     * class: SpriteFont
+     * description:
+     * - The SpriteFont class is responsible for loading a TrueType font, creating a texture
+     * atlas of the font glyphs, and providing functionality to measure and draw text using a SpriteBatch.
+     * - The class initializes SDL_ttf, loads the specified font, and generates a texture atlas containing the glyphs for a specified range of characters.
+     * - It provides a measure function to calculate the dimensions of a given string of text, and a draw function to render the text using a SpriteBatch, 
+     * allowing for scaling, coloring, and justification options.
+     */
     class SpriteFont {
-    public:
-        SpriteFont() {};
-        SpriteFont(const char* font, int size, char cs, char ce);
-        SpriteFont(const char* font, int size) :
-            SpriteFont(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR) {
-        }
+        public:
+            SpriteFont() {};
+            /**
+             * constructor: SpriteFont
+             * @description:
+             * - Overloaded constructor that initializes the SpriteFont with a specified font file, size,
+             * and a range of characters to include in the texture atlas. It calls the init function to set up the font resources.
+             * @param font: The file path to the TrueType font to load.
+             * @param size: The size of the font, the higher the size the better quality might crash if hight than 492x492
+             * @param cs: The first character in the range of characters to include in the texture atlas.
+             * @param ce: The last character in the range of characters to include in the texture atlas.
+             */
+            SpriteFont(const char* font, int size, char cs, char ce);
+            
+            /**
+             * constructor: SpriteFont
+             * @description:
+             * - Overloaded constructor that initializes the SpriteFont with a specified font file, size,
+             * and a range of characters to include in the texture atlas. It calls the init function to set up the font resources.
+             * @param font: The file path to the TrueType font to load.
+             * @param size: The size of the font, the higher the size the better quality might crash if hight than 492x492 (uses ASCII from 32 to 126 by default)
+             */
+            SpriteFont(const char* font, int size) :
+                SpriteFont(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR) {
+            }
 
-        void init(const char* font, int size);
-        void init(const char* font, int size, char cs, char ce);
+            void init(const char* font, int size);
+            void init(const char* font, int size, char cs, char ce);
 
-        /// Destroys the font resources
-        void dispose();
+            /// Destroys the font resources
+            void dispose();
 
-        int getFontHeight() const {
-            return _fontHeight;
-        }
+            int getFontHeight() const {
+                return _fontHeight;
+            }
 
-        /// Measures the dimensions of the text
-        glm::vec2 measure(const char* s);
+            /// Measures the dimensions of the text
+            glm::vec2 measure(const char* s);
 
-        /// Draws using a spritebatch
-        void draw(SpriteBatch& batch, const char* s, glm::vec2 position, glm::vec2 scaling, 
-                  float depth, FunkyEngine::Vertex::ColorRGBA tint, Justification just = Justification::LEFT);
-    private:
-        static std::vector<int>* createRows(glm::ivec4* rects, int rectsLength, int r, int padding, int& w);
+            /// Draws using a spritebatch
+            void draw(SpriteBatch& batch, const char* s, glm::vec2 position, glm::vec2 scaling, 
+                    float depth, FunkyEngine::Vertex::ColorRGBA tint, Justification just = Justification::LEFT);
+        private:
+            static std::vector<int>* createRows(glm::ivec4* rects, int rectsLength, int r, int padding, int& w);
 
-        int _regStart, _regLength;
-        CharGlyph* _glyphs;
-        int _fontHeight;
+            int _regStart, _regLength;
+            CharGlyph* _glyphs;
+            int _fontHeight;
 
-        unsigned int _texID;
-    };
+            unsigned int _texID;
+        };
 
 }
 

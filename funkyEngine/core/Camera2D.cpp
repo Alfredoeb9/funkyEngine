@@ -54,7 +54,7 @@ void FunkyEngine::Camera2D::update() {
         glm::vec3 translate(
             -_position.x + _screenWidth / 2.0f, 
             -_position.y + _screenHeight / 2.0f, 
-            1.0f
+            0.0f
         );
 
         _cameraMatrix = glm::translate(_orthoMatrix, translate);
@@ -110,7 +110,7 @@ bool FunkyEngine::Camera2D::isBoxInView(const glm::vec2& position, const glm::ve
     // then compare that against the radius of the Agent to determine the collision
     glm::vec2 centerPos = position + dimensions / 2.0f;     // Get the center  pos of the player
     // Center position of the camera
-    glm::vec2 centerCameraPos = _position + glm::vec2(scaledScreenDimensions.x / 2.0f, scaledScreenDimensions.y / 2.0f);
+    glm::vec2 centerCameraPos = _position; // + glm::vec2(scaledScreenDimensions.x / 2.0f, scaledScreenDimensions.y / 2.0f);
     // Vector from input to the camera
     glm::vec2 distVec = centerPos - centerCameraPos;
 

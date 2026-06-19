@@ -34,6 +34,7 @@ namespace FunkyEngine {
             static std::mutex _logMutex;
             static bool _isInitialized;
 
+            static void logInternal(LogLevel level, const std::string& message);
             static std::string getLevelString(LogLevel level);
 
         public:
