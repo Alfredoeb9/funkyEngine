@@ -34,14 +34,14 @@ project(Bengine CXX)
 # )
 # FetchContent_MakeAvailable(glm)
 set(SDL2_ttf_DIR "C:/Libraries/SDL2_ttf-2.24.0/x86_64-w64-mingw32/lib/cmake/SDL2_ttf")
-
-# 4. Find System Packages (Must be called BEFORE linking targets like OpenGL::GL)
+set(SDL2_mixer_DIR "C:/Libraries/SDL2_mixer-2.8.1/x86_64-w64-mingw32/lib/cmake/SDL2_mixer")# 4. Find System Packages (Must be called BEFORE linking targets like OpenGL::GL)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(glm REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 
 set(Bengine_SOURCES
     funkyEngine/core/Camera2D.cpp
@@ -60,11 +60,13 @@ set(Bengine_SOURCES
     funkyEngine/graphics/picoPNG.cpp
     funkyEngine/FunkyEngine.cpp
     funkyEngine/core/Logger.cpp
+    funkyEngine/core/AudioEngine.cpp
 )
 
 add_library(Bengine STATIC ${Bengine_SOURCES}
     funkyEngine/core/Logger.h
-    funkyEngine/core/Logger.cpp)
+    funkyEngine/core/Logger.cpp
+    funkyEngine/core/AudioEngine.h)
 add_library(FunkyEngine ALIAS Bengine)
 
 # Tell anyone who links to Bengine where to find its header files
@@ -77,6 +79,7 @@ target_link_libraries(Bengine PUBLIC
     SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
+    SDL2_mixer::SDL2_mixer
     OpenGL::GL 
     GLEW::GLEW 
     glm::glm
