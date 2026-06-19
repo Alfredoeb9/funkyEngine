@@ -38,13 +38,8 @@ FunkyEngine::GLTexture FunkyEngine::TextureCache::getTexture(std::string texture
         // insert into map
         _textureMap.insert(make_pair(texturePath, newTexture));
 
-        FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Texture loaded: " + texturePath);
-
-
         return newTexture;
     }
-
-    FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Texture used from cache: " + texturePath);
 
     return mit->second;
 }

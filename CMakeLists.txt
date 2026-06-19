@@ -59,6 +59,7 @@ set(Bengine_SOURCES
     funkyEngine/graphics/IOManager.cpp
     funkyEngine/graphics/picoPNG.cpp
     funkyEngine/FunkyEngine.cpp
+    funkyEngine/core/Logger.cpp
 )
 
 add_library(Bengine STATIC ${Bengine_SOURCES}

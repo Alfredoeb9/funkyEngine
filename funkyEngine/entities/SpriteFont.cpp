@@ -140,7 +140,13 @@ namespace FunkyEngine {
             for (size_t ci = 0; ci < bestPartition[ri].size(); ci++) {
                 int gi = bestPartition[ri][ci];
 
-                SDL_Surface* glyphSurface = TTF_RenderGlyph_Blended(f, (char)(cs + gi), fg);
+                SDL_Surface* initialSurface = TTF_RenderGlyph_Blended(f, (char)(cs + gi), fg);
+
+                // Convert explicitly to BGRA32 to match OpenGL
+                SDL_Surface* glyphSurface = SDL_ConvertSurfaceFormat(initialSurface, SDL_PIXELFORMAT_BGRA32, 0);
+
+                // Free the initial surface immediately to prevent memory leaks!
+                SDL_FreeSurface(initialSurface);
 
                 // Pre-multiplication occurs here
                 unsigned char* sp = (unsigned char*)glyphSurface->pixels;

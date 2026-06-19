@@ -35,11 +35,12 @@ namespace FunkyEngine {
             glm::mat4 getCameraMatrix() { return _cameraMatrix; }
 
         private:
-            int _screenWidth, _screenHeight;
-            bool _needsMatrixUpdate;
-            float _scale;
-            glm::vec2 _position;     // 2 floats same as GLS vec2
-            glm::mat4 _cameraMatrix;  // 4x4 matrix
-            glm::mat4 _orthoMatrix;  // Hold on to our matrix
+            int _screenWidth = 500;
+            int _screenHeight = 500;
+            bool _needsMatrixUpdate = true;
+            float _scale = 1.0f;                            // 1.0f = normal scale, 0.5f = zoom out, 2.0f = zoom in
+            glm::vec2 _position = glm::vec2(0.0f, 0.0f);    // 2 floats same as GLS vec2
+            glm::mat4 _cameraMatrix = glm::mat4(1.0f);      // 4x4 matrix
+            glm::mat4 _orthoMatrix = glm::mat4(1.0f);       // Hold on to our matrix
     };
 };
