@@ -1,7 +1,21 @@
 #include "AudioEngine.h"
 #include "Logger.h"
 
-namespace funkyEngine {
+namespace FunkyEngine {
+
+    SoundEffect::SoundEffect(const char* filePath) {
+        m_chunk = Mix_LoadWAV(filePath);
+        if (m_chunk == nullptr) {
+            FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load sound effect chunk: " + std::string(filePath) + ". " + std::string(Mix_GetError()));
+        }
+    }
+
+    SoundEffect::~SoundEffect() {
+        if (m_chunk != nullptr) {
+            Mix_FreeChunk(m_chunk);
+            m_chunk = nullptr;
+        }
+    }
     
     /**
      * function: SoundEffect::play
@@ -13,8 +27,22 @@ namespace funkyEngine {
     void SoundEffect::play(int loops) {
         // Check if the sound effect is loaded before attempting to play it
         // We can store the variable of Mix_PlayChannel 
-        if ( Mix_PlayChannel(-1, m_chunk, loops)) {
+        if ( Mix_PlayChannel(-1, m_chunk, loops) == -1) {
            FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to play sound effect: " + std::string(Mix_GetError()));
+        }
+    }
+
+    Music::Music(const char* filePath) {
+        m_music = Mix_LoadMUS(filePath);
+        if (m_music == nullptr) {
+            FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load music track: " + std::string(filePath) + ". " + std::string(Mix_GetError()));
+        }
+    }
+
+    Music::~Music() {
+        if (m_music != nullptr) {
+            Mix_FreeMusic(m_music);
+            m_music = nullptr;
         }
     }
 
@@ -82,17 +110,23 @@ namespace funkyEngine {
     AudioEngine::~AudioEngine() {
         destroy();
 
-        // Clean up cached sound effects
-        for (auto& pair : m_soundEffectCache) {
-            delete pair.second;
-        }
-        m_soundEffectCache.clear();
+        // // Clean up cached sound effects
+        // for (auto& pair : m_soundEffectCache) {
+        //     if (pair.second != nullptr) {
+        //         delete pair.second;
+        //         pair.second = nullptr;
+        //     }
+        // }
+        // m_soundEffectCache.clear();
 
-        // Clean up cached music
-        for (auto& pair : m_musicCache) {
-            delete pair.second;
-        }
-        m_musicCache.clear();
+        // // Clean up cached music
+        // for (auto& pair : m_musicCache) {
+        //     if (pair.second != nullptr) {
+        //         delete pair.second;
+        //         pair.second = nullptr;
+        //     }
+        // }
+        // m_musicCache.clear();
     }
 
     /**
@@ -127,15 +161,35 @@ namespace funkyEngine {
      * @returns: void
      */
     void AudioEngine::destroy() {
-        if (m_isInitialized) {
-            Mix_CloseAudio();
-            m_isInitialized = false;
-            Mix_Quit();
-            FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Audio system shut down successfully.");
-        } else {
-            FunkyEngine::Logger::log(FunkyEngine::LogLevel::WARNING, "Audio system is not initialized. No need to shut down.");
+        if (!m_isInitialized) return;
+
+        // Clean up sound effects wrappers
+        for (auto& pair : m_soundEffectCache) {
+            delete pair.second; // This calls ~SoundEffect() which calls Mix_FreeChunk()
         }
+        m_soundEffectCache.clear();
+
+        // Clean up music wrappers
+        for (auto& pair : m_musicCache) {
+            delete pair.second; // This calls ~Music() which calls Mix_FreeMusic()
+        }
+        m_musicCache.clear();
+
+        Mix_CloseAudio();
+        Mix_Quit();
+        m_isInitialized = false;
     }
+
+    // SoundEffect::SoundEffect(const char* filePath) {
+    //     m_chunk = Mix_LoadWAV(filePath);
+    // }
+
+    // SoundEffect::~SoundEffect() {
+    //     if (m_chunk != nullptr) {
+    //         Mix_FreeChunk(m_chunk);
+    //         m_chunk = nullptr;
+    //     }
+    // }
 
     /**
      * function: AudioEngine::loadSoundEffect
@@ -151,32 +205,28 @@ namespace funkyEngine {
         SoundEffect* soundEffect = nullptr;
 
         // Failed to find the sound effect in the cache, so we need to load it and add it to the cache
-        if (it != m_soundEffectCache.end()) {
+        if (it == m_soundEffectCache.end()) {
             FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Sound effect not found in cache.");
             
             // Load the sound effect using Mix_LoadWAV from SDL_mixer
             // Mix_LoadWAV is a function that loads a sound effect from a WAV file and returns a pointer to a Mix_Chunk struct that contains the sound effect data. 
             // The filePath.c_str() converts the std::string filePath to a C-style string (const char*) that is required by the Mix_LoadWAV function.
-            Mix_Chunk* chunk = Mix_LoadWAV(filePath.c_str());
+            // Mix_Chunk* chunk = Mix_LoadWAV(filePath.c_str());
 
             // Check if the sound effect was loaded successfully
-            if (chunk == nullptr) {
-                FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load sound effect chunk: " + filePath + ". " + std::string(Mix_GetError()));
-            }
+            // if (chunk == nullptr) {
+            //     FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load sound effect chunk: " + filePath + ". " + std::string(Mix_GetError()));
+            // }
 
             // funkyEngine::SoundEffect soundEffect;
-            soundEffect->m_chunk = chunk;
-            m_soundEffectCache[filePath] = chunk;
+            SoundEffect* effect = new SoundEffect(filePath.c_str());
+            m_soundEffectCache[filePath] = effect;
+            return effect;
 
             
-        } else {
-            // Sound effect found in cache, so we can just return it
-            soundEffect->m_chunk = it->second;
-            FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Sound effect found in cache.");
-        }
-        
-
-        return soundEffect;
+        } 
+        // Found, return the cached pointer
+        return it->second;
     }
 
     /**
@@ -193,32 +243,28 @@ namespace funkyEngine {
         Music* music = nullptr;
 
         // Failed to find the music in the cache, so we need to load it and add it to the cache
-        if (it != m_musicCache.end()) {
+        if (it == m_musicCache.end()) {
             FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Music not found in cache.");
             
             // Load the music using Mix_LoadMUS from SDL_mixer
             // Mix_LoadMUS is a function that loads music from a file and returns a pointer to a Mix_Music struct that contains the music data. 
             // The filePath.c_str() converts the std::string filePath to a C-style string (const char*) that is required by the Mix_LoadMUS function.
-            Mix_Music* mixMusic = Mix_LoadMUS(filePath.c_str());
+            // Mix_Music* mixMusic = Mix_LoadMUS(filePath.c_str());
 
             // Check if the music was loaded successfully
-            if (mixMusic == nullptr) {
-                FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load music: " + filePath + ". " + std::string(Mix_GetError()));
-            }
+            // if (mixMusic == nullptr) {
+            //     FunkyEngine::Logger::log(FunkyEngine::LogLevel::CRITICAL, "Failed to load music: " + filePath + ". " + std::string(Mix_GetError()));
+            // }
 
             // make sure to assign the loaded music to the Music object and add it to the cache
-            music->m_music = mixMusic;
-            m_musicCache[filePath] = mixMusic;
+            Music* newMusic = new Music(filePath.c_str());
+            m_musicCache[filePath] = newMusic;
 
-            
-        } else {
-            // Music found in cache, so we can just return it
-            music->m_music = it->second;
-            FunkyEngine::Logger::log(FunkyEngine::LogLevel::INFO, "Music found in cache.");
-        }
+            return newMusic;
+        } 
         
 
-        return music;
+        return it->second;
     }
 
 };

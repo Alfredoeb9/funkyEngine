@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-namespace funkyEngine {
+namespace FunkyEngine {
 
     /**
      * class: SoundEffect
@@ -72,8 +72,8 @@ namespace funkyEngine {
             bool m_isInitialized = false; // Flag to track if the audio system has been initialized
             
             // Caches for loaded sound effects and music to avoid loading the same file multiple times
-            std::map<std::string, Mix_Chunk*> m_soundEffectCache;
-            std::map<std::string, Mix_Music*> m_musicCache;
+            std::map<std::string, SoundEffect*> m_soundEffectCache;
+            std::map<std::string, Music*> m_musicCache;
         public:
             AudioEngine();
             ~AudioEngine();
