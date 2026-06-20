@@ -23,6 +23,8 @@ namespace funkyEngine {
             SoundEffect(const char* filePath);
             ~SoundEffect();
 
+            friend class AudioEngine; // Allow AudioEngine to access private members of SoundEffect
+
             void play(int loops = 0);
     };
 
@@ -44,7 +46,14 @@ namespace funkyEngine {
             Music(const char* filePath);
             ~Music();
 
+            friend class AudioEngine; // Allow AudioEngine to access private members of Music
+
             void play(int loops = -1);
+
+            // These are static functions that can be called without an instance of the Music class. They control the playback of music globally.
+            static void pause();
+            static void resume();
+            static void stop();
     };
 
     /**
@@ -63,8 +72,8 @@ namespace funkyEngine {
             bool m_isInitialized = false; // Flag to track if the audio system has been initialized
             
             // Caches for loaded sound effects and music to avoid loading the same file multiple times
-            std::map<std::string, SoundEffect*> m_soundEffectCache;
-            std::map<std::string, Music*> m_musicCache;
+            std::map<std::string, Mix_Chunk*> m_soundEffectCache;
+            std::map<std::string, Mix_Music*> m_musicCache;
         public:
             AudioEngine();
             ~AudioEngine();
