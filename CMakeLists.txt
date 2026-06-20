@@ -66,7 +66,9 @@ set(Bengine_SOURCES
 add_library(Bengine STATIC ${Bengine_SOURCES}
     funkyEngine/core/Logger.h
     funkyEngine/core/Logger.cpp
-    funkyEngine/core/AudioEngine.h)
+    funkyEngine/core/AudioEngine.h
+    funkyEngine/core/ParticleEngine2D.h
+    funkyEngine/core/ParticleBatch2D.h)
 add_library(FunkyEngine ALIAS Bengine)
 
 # Tell anyone who links to Bengine where to find its header files
