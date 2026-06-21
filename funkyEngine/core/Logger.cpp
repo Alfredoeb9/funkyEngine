@@ -95,7 +95,7 @@ namespace FunkyEngine {
 
         // Format: [HH:MM:SS] [LEVEL] Message
         std::stringstream ss;
-        // ss << std::put_time(localTime, "[%H:%M:%S]") << " " << getLevelString(level) << " " << message << "\n";
+        ss << std::put_time(localTime, "[%H:%M:%S]") << " " << getLevelString(level) << " " << message << "\n";
         std::string formattedMessage = ss.str();
 
         // Output to Console via standard streams based on log level
@@ -112,6 +112,6 @@ namespace FunkyEngine {
         }
 
         // Mirror to SDL's internal system logs
-        SDL_Log("%s", formattedMessage.c_str());
+        // SDL_Log("%s", formattedMessage.c_str());
     }
 }

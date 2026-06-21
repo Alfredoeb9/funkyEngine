@@ -51,6 +51,10 @@ set(Bengine_SOURCES
     funkyEngine/core/Window.cpp
     funkyEngine/core/InputManager.cpp
     funkyEngine/core/Timing.cpp
+    funkyEngine/core/Logger.cpp
+    funkyEngine/core/ParticleBatch2D.cpp
+    funkyEngine/core/ParticleEngine2D.cpp
+    funkyEngine/core/AudioEngine.cpp
     funkyEngine/entities/Sprites.cpp
     funkyEngine/entities/SpriteFont.cpp
     funkyEngine/entities/SpriteBatch.cpp
@@ -59,8 +63,6 @@ set(Bengine_SOURCES
     funkyEngine/graphics/IOManager.cpp
     funkyEngine/graphics/picoPNG.cpp
     funkyEngine/FunkyEngine.cpp
-    funkyEngine/core/Logger.cpp
-    funkyEngine/core/AudioEngine.cpp
 )
 
 add_library(Bengine STATIC ${Bengine_SOURCES}
