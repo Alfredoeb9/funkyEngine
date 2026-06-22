@@ -3,16 +3,27 @@
 #include "entities/SpriteBatch.h"
 
 namespace FunkyEngine {
-
+    /**
+     * function: ParticleEngine2D
+     * @description:
+     * - Constructor for the ParticleEngine2D class.
+     */
     ParticleEngine2D::ParticleEngine2D(){
         // Empty;
     }
 
+    /**
+     * function: ~ParticleEngine2D
+     * @description:
+     * - Destructor for the ParticleEngine2D class.
+     * - Cleans up dynamically allocated memory for particle batches.
+     * - Iterates through the vector of particle batches and deletes each one.
+     */
     ParticleEngine2D::~ParticleEngine2D() {
         // shared_ptrs will automatically free the memory
         // once the last reference is destroyed
 
-        for (auto& batch : m_batches) {
+        for (auto& batch : m_particleBatches) {
             delete batch;
         }
     }
@@ -21,8 +32,14 @@ namespace FunkyEngine {
     //     m_particleBatches.push_back(particleBatch);
     // }
 
+    /**
+     * function: addParticleBatch
+     * @description:
+     * - Adds a particle batch to the engine.
+     * @param particleBatch: A pointer to the particle batch to add.
+     */
     void ParticleEngine2D::addParticleBatch(ParticleBatch2D* particleBatch) {
-        m_batches.push_back(particleBatch);
+        m_particleBatches.push_back(particleBatch);
     }
 
     // void ParticleEngine2D::update(float deltaTime) {
@@ -31,10 +48,15 @@ namespace FunkyEngine {
     //     }
     // }
 
-
+    /**
+     * function: update
+     * @description:
+     * - Updates all particle batches in the engine.
+     * @param deltaTime: The time elapsed since the last frame, used for smooth animation.
+     */
     void ParticleEngine2D::update(float deltaTime) {
-        for (auto& b : m_batches) {
-            b->update(deltaTime);
+        for (auto& batch : m_particleBatches) {
+            batch->update(deltaTime);
         }
     }
     // Draw all of our particle batches
@@ -47,10 +69,17 @@ namespace FunkyEngine {
     //     }
     // }
 
+    /**
+     * function: draw
+     * @description:
+     * - Draws all particle batches in the engine using the provided sprite batch.
+     * @param spriteBatch: A pointer to the sprite batch used for rendering.
+     */
     void ParticleEngine2D::draw(SpriteBatch* spriteBatch) {
-        for (auto& b : m_batches) {
+        // Loop through all particle batches and draw thems
+        for (auto& batch : m_particleBatches) {
             spriteBatch->begin();
-            b->draw(spriteBatch);
+            batch->draw(spriteBatch);
             spriteBatch->end();
             spriteBatch->renderBatch();
         }

@@ -7,6 +7,16 @@
 
 namespace FunkyEngine {
 
+    /**
+     * class: Particle2D
+     * @description:
+     * - Represents a single particle in the particle system, with properties for position, velocity, color, life, and width.
+     * - The life property determines how long the particle will be active, and the width determines its size when drawn.
+     * The color includes an alpha component for transparency, allowing for fading effects as the particle's life decreases.
+     * This class is used internally by the ParticleBatch2D to manage individual particles.
+     * @note The default constructor initializes the particle with a position of (0, 0), zero velocity, a default color of opaque black, and a life of 0 (inactive).
+     * @note The ParticleBatch2D class manages an array of these particles, updating and drawing them based on their properties.
+     */
     class Particle2D {
         public:
             glm::vec2 position = glm::vec2(0.0f);
@@ -21,6 +31,13 @@ namespace FunkyEngine {
         particle.position += particle.velocity * deltaTime;
     }
 
+    /**
+     * class: ParticleBatch2D
+     * @description:
+     * - Manages a batch of 2D particles, allowing for efficient updating and rendering of multiple particles at once.
+     *  - Provides methods to initialize the batch with a maximum number of particles, decay rate, texture, and an optional custom update function.
+     * - The addParticle method allows for adding new particles to the batch with specified properties,
+     */
     class ParticleBatch2D {
         public:
             ParticleBatch2D();

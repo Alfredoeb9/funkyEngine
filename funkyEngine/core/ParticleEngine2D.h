@@ -8,6 +8,12 @@ namespace FunkyEngine {
     class ParticleBatch2D;
     class SpriteBatch;
 
+    /**
+     * class: ParticleEngine2D
+     * @description:
+     * - Manages multiple particle batches and handles their updates and rendering.
+     * - Provides an interface to add particle batches, update them, and draw them using a
+     */
     class ParticleEngine2D {
         public:
             ParticleEngine2D();
@@ -21,6 +27,6 @@ namespace FunkyEngine {
 
         private:
             // std::vector<std::shared_ptr<ParticleBatch2D>> m_particleBatches;
-            std::vector<ParticleBatch2D*> m_batches;
+            std::vector<ParticleBatch2D*> m_particleBatches;
     };
 }
